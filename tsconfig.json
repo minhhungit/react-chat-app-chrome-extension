@@ -1,0 +1,20 @@
+{
+    "compilerOptions": {
+      "target": "ES6",
+      "module": "ESNext", // Use ESNext for modern ES modules
+      "moduleResolution": "Node", // Use Node module resolution
+      "jsx": "react",
+      "strict": true,
+      "esModuleInterop": true, // Enable ES module interop
+      "skipLibCheck": true,
+      "forceConsistentCasingInFileNames": true,
+      "outDir": "./dist", // Output directory for compiled files
+      "rootDir": "./src", // Source directory
+      "baseUrl": ".",
+      "paths": {
+        "@/*": ["./src/*"]
+      }
+    },
+    "include": ["src/**/*"], // Include all files in the src directory
+    "exclude": ["node_modules"] // Exclude node_modules
+  }

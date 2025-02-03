@@ -1,0 +1,110 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+ 
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 222.2 47.4% 11.2%;
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 47.4% 11.2%;
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 47.4% 11.2%;
+    --primary: 222.2 47.4% 11.2%;
+    --primary-foreground: 210 40% 98%;
+    --secondary: 210 40% 96.1%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
+    --accent: 210 40% 96.1%;
+    --accent-foreground: 222.2 47.4% 11.2%;
+    --destructive: 0 100% 50%;
+    --destructive-foreground: 210 40% 98%;
+    --ring: 215 20.2% 65.1%;
+    --radius: 0.5rem;
+  }
+ 
+  .dark {
+    --background: 224 71% 4%;
+    --foreground: 213 31% 91%;
+    --muted: 223 47% 11%;
+    --muted-foreground: 215.4 16.3% 56.9%;
+    --accent: 216 34% 17%;
+    --accent-foreground: 210 40% 98%;
+    --popover: 224 71% 4%;
+    --popover-foreground: 215 20.2% 65.1%;
+    --border: 216 34% 17%;
+    --input: 216 34% 17%;
+    --card: 224 71% 4%;
+    --card-foreground: 213 31% 91%;
+    --primary: 210 40% 98%;
+    --primary-foreground: 222.2 47.4% 1.2%;
+    --secondary: 222.2 47.4% 11.2%;
+    --secondary-foreground: 210 40% 98%;
+    --destructive: 0 63% 31%;
+    --destructive-foreground: 210 40% 98%;
+    --ring: 216 34% 17%;
+  }
+}
+ 
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply font-sans antialiased bg-background text-foreground;
+  }
+
+  /*
+  .markdown-content {
+    @apply prose prose-slate mx-auto dark:prose-invert;
+
+
+    h1 {
+      @apply text-3xl font-bold text-slate-900 dark:text-slate-100;
+    }
+    h2 {
+      @apply text-2xl font-semibold text-slate-800 dark:text-slate-200;
+    }
+    h3 {
+      @apply text-xl font-medium text-slate-700 dark:text-slate-300;
+    }
+    p {
+      @apply mb-4 leading-relaxed text-slate-700 dark:text-slate-400;
+    }
+    a {
+      @apply text-blue-500 dark:text-blue-400 underline hover:text-blue-600 dark:hover:text-blue-300;
+    }
+    blockquote {
+      @apply border-l-4 border-slate-300 dark:border-slate-600 pl-4 italic text-slate-600 dark:text-slate-400;
+    }
+    ul {
+      @apply list-disc pl-6 mb-4;
+    }
+    ol {
+      @apply list-decimal pl-6 mb-4;
+    }
+    li {
+      @apply mb-2 text-slate-700 dark:text-slate-400;
+    }
+    code {
+      @apply bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-slate-100 px-1.5 py-0.5 rounded font-mono text-sm;
+    }
+    pre {
+      @apply bg-slate-900 text-slate-100 p-4 rounded-lg overflow-x-auto text-sm;
+    }
+    table {
+      @apply table-auto border-collapse border border-slate-300 dark:border-slate-600 w-full my-4;
+    }
+    th {
+      @apply border border-slate-300 dark:border-slate-600 bg-slate-100 dark:bg-slate-700 px-4 py-2 text-left;
+    }
+    td {
+      @apply border border-slate-300 dark:border-slate-600 px-4 py-2 text-slate-700 dark:text-slate-400;
+    }
+  }
+  */
+  
+}
