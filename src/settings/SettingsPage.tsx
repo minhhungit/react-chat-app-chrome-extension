@@ -1112,7 +1112,7 @@ Bạn là trợ lý dịch thuật đa ngữ, chuyên xử lý văn bản học 
                 {features.map((feature) => (
                   <Card
                     key={feature.id}
-                    className="cursor-pointer hover:shadow-md transition-shadow relative"
+                    className="cursor-pointer hover:shadow-md transition-shadow relative group"
                     onClick={() => handleEditFeature(feature)}
                   >
                     <CardHeader className="p-4">
@@ -1129,7 +1129,7 @@ Bạn là trợ lý dịch thuật đa ngữ, chuyên xử lý văn bản học 
                             </div>
                           ) : (
                             <Button
-                              className="text-blue-500 hover:text-blue-600 hover:bg-blue-50 transition-colors"
+                              className="text-blue-500 hover:text-blue-600 hover:bg-blue-50 transition-colors opacity-0 group-hover:opacity-100"
                               variant="ghost"
                               size="sm"
                               onClick={(e) => {
