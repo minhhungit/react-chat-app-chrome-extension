@@ -1,6 +1,11 @@
 # AI Chatbot Chrome Extension
 
-![Demo 1](public/demo1.png)
+
+
+https://github.com/user-attachments/assets/c42d26ab-aecb-49bb-b33b-55a8bf0681a9
+
+
+
 ![Setting](public/demo2.png)
 
 Một tiện ích mở rộng Chrome cung cấp thông tin chi tiết về văn bản được chọn bằng AI. Tiện ích này tích hợp với các API AI hàng đầu để cung cấp câu trả lời thông minh và chính xác.
