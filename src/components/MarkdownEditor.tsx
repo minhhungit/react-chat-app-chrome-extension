@@ -25,7 +25,8 @@ const MarkdownEditor: React.FC<MarkdownEditorProps> = ({
     <MdEditor
       ref={ref}
       value={value}
-      style={{ height: "200px" }}
+      style={{ }}
+      className="max-h-[100px]"
       placeholder={placeholder}
       onChange={({ text }) => onChange(text)}
       renderHTML={text => mdParser.render(text)}

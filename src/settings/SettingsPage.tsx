@@ -11,8 +11,15 @@ import { Slider } from "@/components/ui/slider";
 import { InfoIcon } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
-import { chatStore } from '@/stores/ChatStore';
+// import { chatStore } from '@/stores/ChatStore';
 import { OpenAI } from "openai";
+import { db } from '@/utils/IndexedDBWrapper';
+// import { useToast } from "@/hooks/use-toast"
+import { SETTING_EXPLANATIONS } from '@/constants/constants';
+import toast, { Toaster } from 'react-hot-toast';
+import { useNavigate } from 'react-router-dom';
+import { chatStore } from '@/stores/ChatStore';
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 export interface ChatConfig {
   provider: string;
@@ -218,18 +225,6 @@ export interface FeatureEntry {
 
 export type Features = FeatureEntry[];
 
-const SETTING_EXPLANATIONS = {
-  temperature: "Điều chỉnh mức độ sáng tạo của model. Giá trị càng cao, kết quả càng ngẫu nhiên. Ví dụ, tăng temperature giúp model tạo ra câu trả lời độc đáo hơn nhưng có thể rủi ro hơn. Thông thường, giá trị này nằm trong khoảng từ 0.2 đến 1.5. Ví dụ, nếu đặt temperature là 0.5, model sẽ tạo ra câu trả lời vừa phải về mặt sáng tạo.",
-  max_tokens: "Giới hạn số lượng từ trong câu trả lời. Giá trị càng cao, câu trả lời càng dài. Tuy nhiên, điều này cũng tiêu tốn nhiều tài nguyên hơn. Thông thường, giá trị này nằm trong khoảng từ 100 đến 1000. Ví dụ, nếu đặt max_tokens là 200, câu trả lời sẽ có độ dài vừa phải, khoảng 2-3 câu.",
-  top_p: "Kiểm soát tính đa dạng của kết quả. Giá trị thấp sẽ tập trung vào các từ phổ biến, trong khi giá trị cao cho phép kết quả đa dạng hơn. Ví dụ, nếu đặt top_p là 0.5, model sẽ chọn từ trong top 50% từ có xác suất cao nhất. Thông thường, giá trị này nằm trong khoảng từ 0.1 đến 0.9.",
-  frequency_penalty: "Giảm tần suất lặp lại từ. Giá trị dương sẽ giảm lặp từ, giúp câu trả lời đa dạng hơn. Ví dụ, nếu đặt frequency_penalty là 0.5, model sẽ giảm 50% tần suất lặp lại từ. Thông thường, giá trị này nằm trong khoảng từ 0 đến 1.",
-  presence_penalty: "Khuyến khích sử dụng từ mới. Giá trị dương sẽ tăng từ mới, giúp câu trả lời phong phú hơn. Ví dụ, nếu đặt presence_penalty là 0.5, model sẽ tăng 50% khả năng chọn từ chưa dùng. Thông thường, giá trị này nằm trong khoảng từ 0 đến 1.",
-  model: "Chọn model AI phù hợp với nhu cầu sử dụng. Mỗi model có điểm mạnh và điểm yếu riêng, vì vậy việc chọn model đúng sẽ ảnh hưởng đến chất lượng và tốc độ.",
-  apiKey: "Khóa API để xác thực với nhà cung cấp dịch vụ AI. Giữ bí mật apiKey là rất quan trọng để tránh bị lợi dụng. Ví dụ, nếu apiKey là 'sk-abc-xyz', người dùng cần giữ bí mật và không chia sẻ với người khác.",
-  apiUrl: "Địa chỉ API endpoint của nhà cung cấp dịch vụ AI. Cấu trúc apiUrl đúng cách là rất quan trọng để đảm bảo kết nối thành công."
-};
-
-
 const SettingsPage: React.FC = () => {
   const [chatProvider, setChatProvider] = useState("OpenAI");
   const [reasoningProvider, setReasoningProvider] = useState("OpenAI");
@@ -240,16 +235,21 @@ const SettingsPage: React.FC = () => {
   const [isCustomReasoningModel, setIsCustomReasoningModel] = useState(false);
   const [showChatApiKey, setShowChatApiKey] = useState(false);
   const [showReasoningApiKey, setShowReasoningApiKey] = useState(false);
-  const [activeTab, setActiveTab] = useState<'chat' | 'reasoning' | 'features'>('chat');
+  const [activeTab, setActiveTab] = useState<'chat' | 'reasoning' | 'features'>('features');
   const [isFeatureDialogOpen, setIsFeatureDialogOpen] = useState(false);
   const [editingFeature, setEditingFeature] = useState<FeatureEntry | null>(null);
   const [features, setFeatures] = useState<FeatureEntry[]>([]);
   const [isImproving, setIsImproving] = useState(false);
+  const [defaultFeatureId, setDefaultFeatureId] = useState<string>('');
+  const navigate = useNavigate();
 
   useEffect(() => {
     const loadData = async () => {
-      const result = await chrome.storage.local.get(['providersConfig', 'chatProvider', 'reasoningProvider', 'features']);
-      const { providersConfig, chatProvider, reasoningProvider, features } = result;
+      const providersConfig = await db.get('providersConfig');
+      const chatProvider = await db.get('chatProvider') || "OpenAI";
+      const reasoningProvider = await db.get('reasoningProvider') || "OpenAI";
+      const features = await db.get('features');
+      const defaultFeature = await db.get('defaultFeature');
 
       if (providersConfig) {
         setProvidersConfig(providersConfig);
@@ -259,9 +259,6 @@ const SettingsPage: React.FC = () => {
         const savedChatConfig = providersConfig[chatProvider]?.chatConfig || DEFAULT_PROVIDERS[chatProvider].chatConfig;
         const savedReasoningConfig = providersConfig[reasoningProvider]?.reasoningConfig || DEFAULT_PROVIDERS[reasoningProvider].reasoningConfig;
 
-        console.log(savedChatConfig);
-        console.log(savedReasoningConfig);
-
         setChatConfig(savedChatConfig);
         setReasoningConfig(savedReasoningConfig);
       } else {
@@ -270,11 +267,14 @@ const SettingsPage: React.FC = () => {
         setReasoningConfig(DEFAULT_PROVIDERS[reasoningProvider].reasoningConfig);
       }
 
-      console.log(`load features from storage`, result.features);
-      if (result.features) {
-        setFeatures(Array.isArray(result.features) ? result.features : []);
+      if (features) {
+        setFeatures(Array.isArray(features) ? features : []);
       } else {
         setFeatures([]);
+      }
+
+      if (defaultFeature) {
+        setDefaultFeatureId(defaultFeature);
       }
     };
 
@@ -296,17 +296,28 @@ const SettingsPage: React.FC = () => {
       setIsCustomReasoningModel(true);
     }
   }, [reasoningConfig]);
-
-  // useEffect(() => { 
-  //   chrome.storage.local.set({ features: features });
-  //   console.log(`saved `, features);
-  // }, [features]);
+  
+  useEffect(() => {
+    try{
+      chrome.runtime.sendMessage({ action: 'updateContextMenu' }, (response) => {
+        if (response && response.success) {
+          console.log('Context menu updated successfully!');
+        } else {
+          console.error('Failed to update context menu.');
+        }
+      });
+    }catch(error){
+      
+    }
+  }, [features]);
 
   const generateSuggestPrompt = async (featureName: string, currentPrompt: string) => {
     setIsImproving(true);
     try {
-      const result = await chrome.storage.local.get(['providersConfig', 'chatProvider']);
-      const config = result.providersConfig?.[result.chatProvider]?.chatConfig || {};
+      const providersConfig = await db.get('providersConfig');
+      const chatProvider = await db.get('chatProvider');
+
+      const config = providersConfig?.[chatProvider]?.chatConfig || {};
 
       const openai = new OpenAI({
         apiKey: config.apiKey,
@@ -459,20 +470,43 @@ Bạn là trợ lý dịch thuật đa ngữ, chuyên xử lý văn bản học 
     }
   };
 
-  const handleSave = () => {
-    providersConfig[chatProvider].chatConfig = chatConfig;
-    providersConfig[reasoningProvider].reasoningConfig = reasoningConfig;
+  const handleSaveFunc = async () =>{
+    const updatedProvidersConfig = {
+      ...providersConfig,
+      [chatProvider]: {
+        ...providersConfig[chatProvider],
+        chatConfig: chatConfig
+      },
+      [reasoningProvider]: {
+        ...providersConfig[reasoningProvider],
+        reasoningConfig: reasoningConfig
+      }
+    };
 
-    console.log(features);
+    // Cập nhật state trước khi lưu
+    setProvidersConfig(updatedProvidersConfig);
+    setFeatures(features);
+    setDefaultFeatureId(defaultFeatureId);
 
-    chrome.storage.local.set({
-      providersConfig: providersConfig,
-      chatProvider: chatProvider,
-      reasoningProvider: reasoningProvider,
-      features: features
-    }, () => {
-      alert('Cấu hình đã được lưu thành công!');
-    });
+    // Lưu tất cả dữ liệu vào IndexedDB
+    await Promise.all([
+      db.set('providersConfig', updatedProvidersConfig),
+      db.set('chatProvider', chatProvider),
+      db.set('reasoningProvider', reasoningProvider),
+      db.set('features', features),
+      db.set('defaultFeature', defaultFeatureId)
+    ]);
+  }
+  
+  const handleSave = async () => {
+    toast.promise(
+      handleSaveFunc(),
+       {
+         loading: 'Saving...',
+         success: <b>Cấu hình đã được lưu thành công!</b>,
+         error: <b>Đã xảy ra lỗi khi lưu cấu hình. Vui lòng thử lại.</b>,
+       }, {position: 'top-center'}
+     );
   };
 
   const handleExport = () => {
@@ -480,7 +514,8 @@ Bạn là trợ lý dịch thuật đa ngữ, chuyên xử lý văn bản học 
       providersConfig,
       chatProvider,
       reasoningProvider,
-      features: features
+      features: features,
+      defaultFeatureId: defaultFeatureId
     };
     const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
@@ -497,10 +532,11 @@ Bạn là trợ lý dịch thuật đa ngữ, chuyên xử lý văn bản học 
     const file = event.target.files?.[0];
     if (file) {
       const reader = new FileReader();
-      reader.onload = (e) => {
+      reader.onload = async (e) => {
         try {
           const data = JSON.parse(e.target?.result as string);
           if (data.providersConfig && data.chatProvider && data.reasoningProvider) {
+            // Cập nhật state trước
             setProvidersConfig(data.providersConfig);
             setChatProvider(data.chatProvider);
             setReasoningProvider(data.reasoningProvider);
@@ -511,17 +547,19 @@ Bạn là trợ lý dịch thuật đa ngữ, chuyên xử lý văn bản học 
               setFeatures(data.features);
             }
 
-            providersConfig[chatProvider].chatConfig = chatConfig;
-            providersConfig[reasoningProvider].reasoningConfig = reasoningConfig;
+            if (data.defaultFeatureId) {
+              setDefaultFeatureId(data.defaultFeatureId);
+            }
 
-            chrome.storage.local.set({
-              providersConfig: providersConfig,
-              chatProvider: chatProvider,
-              reasoningProvider: reasoningProvider,
-              features: features
-            }, () => {
-              alert('Cấu hình đã được import thành công!');
-            });
+            await Promise.all([
+              db.set('providersConfig', data.providersConfig),
+              db.set('chatProvider', data.chatProvider),
+              db.set('reasoningProvider', data.reasoningProvider),
+              db.set('features', data.features || []),
+              db.set('defaultFeature', data.defaultFeatureId)
+            ]);
+
+            toast.success("Nhập cấu hình thành công!", {position: 'top-center'}); 
 
           } else {
             throw new Error('File cấu hình không hợp lệ');
@@ -535,11 +573,6 @@ Bạn là trợ lý dịch thuật đa ngữ, chuyên xử lý văn bản học 
     }
   };
 
-  // const handleReset = () => {
-  //   setFeatures([]);
-  //   chrome.storage.local.remove('features');
-  // };
-
   const handleFeatureChange = async (feature: FeatureEntry, updates: Partial<FeatureEntry>) => {
     try {
       const updatedFeature = { ...feature, ...updates };
@@ -547,9 +580,8 @@ Bạn là trợ lý dịch thuật đa ngữ, chuyên xử lý văn bản học 
         f.id === feature.id ? updatedFeature : f
       );
 
-      // Update state and save to storage
       setFeatures(updatedFeatures);
-      await chrome.storage.local.set({ features: updatedFeatures });
+      await db.set('features', updatedFeatures);
     } catch (error) {
       console.error('Lỗi khi cập nhật tính năng:', error);
       alert('Đã xảy ra lỗi khi cập nhật tính năng. Vui lòng thử lại.');
@@ -579,12 +611,10 @@ Bạn là trợ lý dịch thuật đa ngữ, chuyên xử lý văn bản học 
       let updatedFeatures: FeatureEntry[];
 
       if (feature.id != "") {
-        // Update existing feature
         updatedFeatures = features.map(f =>
           f.id === feature.id ? feature : f
         );
       } else {
-        // Add new feature
         const generateId = () => {
           const timestamp = Date.now().toString(36);
           const random = Math.random().toString(36).substring(2, 5);
@@ -600,11 +630,8 @@ Bạn là trợ lý dịch thuật đa ngữ, chuyên xử lý văn bản học 
         updatedFeatures = [...features, newFeature];
       }
 
-      console.log(updatedFeatures);
-
-      // Update state and save to storage
       setFeatures(updatedFeatures);
-      await chrome.storage.local.set({ features: updatedFeatures });
+      await db.set('features', updatedFeatures);
       setIsFeatureDialogOpen(false);
     } catch (error) {
       console.error('Lỗi khi lưu tính năng:', error);
@@ -612,12 +639,19 @@ Bạn là trợ lý dịch thuật đa ngữ, chuyên xử lý văn bản học 
     }
   };
 
-  const handleRemoveFeature = (feature: FeatureEntry) => {
+  const handleRemoveFeature = async (feature: FeatureEntry) => {
     if (confirm(`Bạn có chắc chắn muốn xóa tính năng ${feature.id}?`)) {
       const updatedFeatures = features.filter(f => f.id !== feature.id);
       setFeatures(updatedFeatures);
-      chrome.storage.local.set({ features: updatedFeatures });
+      await db.set('features', updatedFeatures);
     }
+  };
+
+  const handleSetDefaultFeature = async (featureId: string) => {
+    setDefaultFeatureId(featureId);
+    chatStore.setDefaultFeatureId(featureId);
+    await db.set('defaultFeature', featureId);
+    toast.success('Đã đặt tính năng mặc định thành công!', {position: 'top-center'});
   };
 
   return (
@@ -625,6 +659,14 @@ Bạn là trợ lý dịch thuật đa ngữ, chuyên xử lý văn bản học 
       {/* Left Panel */}
       <div className="w-64 border-r p-4">
         <div className="space-y-2">
+        <Button
+          variant="ghost"
+          className="p-2 rounded-full hover:bg-gray-100"
+          onClick={() => navigate('/chatbox')}
+          title="Quay lại chat"
+        >
+          <span className="text-xl">⬅️ Back</span>
+        </Button>
           <Button
             variant="ghost"
             className="w-full justify-start"
@@ -802,6 +844,12 @@ Bạn là trợ lý dịch thuật đa ngữ, chuyên xử lý văn bản học 
                             min={0}
                             max={2}
                             step={0.1}
+                          />
+                          <Input
+                            type="number"
+                            value={chatConfig.temperature}
+                            onChange={e => handleConfigChange('chatConfig.temperature', Number(e.target.value))}
+                            className="w-20"
                           />
                         </div>
                       </div>
@@ -1042,16 +1090,29 @@ Bạn là trợ lý dịch thuật đa ngữ, chuyên xử lý văn bản học 
           )}
           {activeTab === 'features' && (
             <div className="space-y-4">
-              <div className="flex justify-end p-4">
+              {features != null && typeof features != 'undefined' && features.length > 0 && (
+                <div className="flex justify-end p-4">
                 <Button variant="outline" onClick={handleAddFeature}>
                   Thêm tính năng
                 </Button>
               </div>
+              )}
+              {features.length === 0 && (
+                <div className="flex flex-col items-center justify-center p-8 space-y-4">
+                  <p className="text-gray-500 text-center">Chưa có tính năng nào được thêm. Hãy bắt đầu bằng cách thêm tính năng đầu tiên!</p>
+                  <Button 
+                    onClick={() => setIsFeatureDialogOpen(true)}
+                    className="bg-blue-500 hover:bg-blue-600 text-white"
+                  >
+                    Thêm tính năng mới
+                  </Button>
+                </div>
+              )}
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 p-4">
                 {features.map((feature) => (
                   <Card
                     key={feature.id}
-                    className="cursor-pointer hover:shadow-md transition-shadow"
+                    className="cursor-pointer hover:shadow-md transition-shadow relative"
                     onClick={() => handleEditFeature(feature)}
                   >
                     <CardHeader className="p-4">
@@ -1060,17 +1121,37 @@ Bạn là trợ lý dịch thuật đa ngữ, chuyên xử lý văn bản học 
                           <span className="text-xl">{feature.icon}</span>
                           <CardTitle>{feature.name}</CardTitle>
                         </div>
-                        <Button
-                          className="text-red-500"
-                          variant="ghost"
-                          size="sm"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleRemoveFeature(feature);
-                          }}
-                        >
-                          Xóa
-                        </Button>
+                        <div className="flex gap-2">
+                          {defaultFeatureId === feature.id ? (
+                            <div className="bg-blue-500 text-white px-2 py-1 rounded-full text-xs flex items-center gap-1 hover:bg-blue-600 transition-colors">
+                              <span className="text-yellow-300">⭐</span>
+                              <span>Mặc định</span>
+                            </div>
+                          ) : (
+                            <Button
+                              className="text-blue-500 hover:text-blue-600 hover:bg-blue-50 transition-colors"
+                              variant="ghost"
+                              size="sm"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleSetDefaultFeature(feature.id);
+                              }}
+                            >
+                              Đặt mặc định
+                            </Button>
+                          )}
+                          <Button
+                            className="text-red-500"
+                            variant="ghost"
+                            size="sm"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleRemoveFeature(feature);
+                            }}
+                          >
+                            Xóa
+                          </Button>
+                        </div>
                       </div>
                     </CardHeader>
                     <CardContent className="space-y-2 p-4">
@@ -1131,87 +1212,107 @@ Bạn là trợ lý dịch thuật đa ngữ, chuyên xử lý văn bản học 
 
         {/* Feature Dialog */}
         <Dialog open={isFeatureDialogOpen} onOpenChange={setIsFeatureDialogOpen}>
-          <DialogContent className="sm:max-w-[1000px] h-[80vh] overflow-y-auto">
+          <DialogContent className="sm:max-w-[1000px] h-[80vh] flex flex-col">
             <DialogHeader>
               <DialogTitle>{editingFeature ? "Chỉnh sửa tính năng" : "Thêm tính năng mới"}</DialogTitle>
             </DialogHeader>
-            <div className="grid gap-4 py-4">
-              <div className="space-y-2">
-                <Label htmlFor="feature-name">Tên tính năng</Label>
-                <Input
-                  id="feature-name"
-                  value={editingFeature?.name || ""}
-                  onChange={(e) => setEditingFeature(prev => ({ ...prev!, name: e.target.value }))}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="system-prompt">System Prompt</Label>
-                <div className="flex gap-2">
-                  <Textarea
-                    id="system-prompt"
-                    value={editingFeature?.systemPrompt || ""}
-                    onChange={(e) => setEditingFeature(prev => ({ ...prev!, systemPrompt: e.target.value }))}
-                    className="min-h-[350px] flex-1"
+            
+            {/* Content Section */}
+            <ScrollArea className="flex-1 p-4">
+              <div className="grid gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="feature-name">Tên tính năng</Label>
+                  <Input
+                    id="feature-name"
+                    value={editingFeature?.name || ""}
+                    onChange={(e) => setEditingFeature(prev => ({ ...prev!, name: e.target.value }))}
                   />
-                  {(editingFeature?.name || "").trim().length > 0 && <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={async () => {
-                      if (editingFeature?.name) {
-                        try {
-                          const prompt = await generateSuggestPrompt(editingFeature.name, editingFeature.systemPrompt);
-                          setEditingFeature(prev => ({ ...prev!, systemPrompt: prompt || '' }));
-                        } catch (error) {
-                          alert('Không thể cải thiện prompt. Vui lòng thử lại.');
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="system-prompt">System Prompt</Label>
+                  <div className="flex gap-2">
+                    <Textarea
+                      id="system-prompt"
+                      value={editingFeature?.systemPrompt || ""}
+                      onChange={(e) => setEditingFeature(prev => ({ ...prev!, systemPrompt: e.target.value }))}
+                      className="min-h-[350px] flex-1"
+                    />
+                    {(editingFeature?.name || "").trim().length > 0 && <Button
+                      variant="ghost"
+                      size="icon"
+                      className="hover:bg-red-50 transition-colors"
+                      onClick={async () => {
+                        if (editingFeature?.name) {
+                          try {
+                            const prompt = await generateSuggestPrompt(editingFeature.name, editingFeature.systemPrompt);
+                            setEditingFeature(prev => ({ ...prev!, systemPrompt: prompt || '' }));
+                          } catch (error) {
+                            alert('Không thể cải thiện prompt. Vui lòng thử lại.');
+                          }
                         }
-                      }
-                    }}
-                    disabled={isImproving}
-                  >
-                    {isImproving ? (
-                      <div className="w-4 h-4 animate-bounce">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-full h-full text-yellow-400">
-                          <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" />
-                        </svg>
-                      </div>
-                    ) : (
-                      <span className="text-lg">✨</span>
-                    )}
-                  </Button>}
+                      }}
+                      disabled={isImproving}
+                    >
+                      {isImproving ? (
+                        <div className="w-4 h-4 animate-bounce">
+                          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-full h-full text-yellow-400">
+                            <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" />
+                          </svg>
+                        </div>
+                      ) : (
+                        <span className="text-lg">✨</span>
+                      )}
+                    </Button>}
+                  </div>
                 </div>
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="instruction">Instruction</Label>
-                <div className="flex gap-2">
-                  <Textarea
-                    id="instruction"
-                    value={editingFeature?.instruction || ""}
-                    onChange={(e) => setEditingFeature(prev => ({ ...prev!, instruction: e.target.value }))}
-                    className="min-h-[100px] flex-1"
+                <div className="space-y-2">
+                  <Label htmlFor="instruction">Instruction</Label>
+                  <div className="flex gap-2">
+                    <Textarea
+                      id="instruction"
+                      value={editingFeature?.instruction || ""}
+                      onChange={(e) => setEditingFeature(prev => ({ ...prev!, instruction: e.target.value }))}
+                      className="min-h-[100px] flex-1"
+                    />
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <Label>Icon</Label>
+                  <IconPicker
+                    selected={editingFeature?.icon || ""}
+                    onSelect={(icon) => setEditingFeature(prev => ({ ...prev!, icon }))}
+                  />
+                </div>
+                <div className="flex items-center gap-2">
+                  <Label htmlFor="enable-reasoning">Bật Reasoning</Label>
+                  <Switch
+                    id="enable-reasoning"
+                    checked={editingFeature?.enableReasoning || false}
+                    onCheckedChange={(checked) => setEditingFeature(prev => ({ ...prev!, enableReasoning: checked }))}
                   />
                 </div>
               </div>
-              <div className="space-y-2">
-                <Label>Icon</Label>
-                <IconPicker
-                  selected={editingFeature?.icon || ""}
-                  onSelect={(icon) => setEditingFeature(prev => ({ ...prev!, icon }))}
-                />
-              </div>
-              <div className="flex items-center gap-2">
-                <Label htmlFor="enable-reasoning">Bật Reasoning</Label>
-                <Switch
-                  id="enable-reasoning"
-                  checked={editingFeature?.enableReasoning || false}
-                  onCheckedChange={(checked) => setEditingFeature(prev => ({ ...prev!, enableReasoning: checked }))}
-                />
+            </ScrollArea>
+
+            {/* Command Buttons Section - Di chuyển ra ngoài ScrollArea */}
+            <div className="bg-background border-t pt-4">
+              <div className="flex gap-2 justify-end">
+                <Button 
+                  variant="outline" 
+                  onClick={() => setIsFeatureDialogOpen(false)}
+                  className="hover:bg-red-50"
+                >
+                  Hủy
+                </Button>
+                <Button 
+                  type="submit" 
+                  onClick={() => handleSaveFeature(editingFeature!)}
+                  className="bg-red-600 hover:bg-red-700 text-white"
+                >
+                  Lưu thay đổi
+                </Button>
               </div>
             </div>
-            <DialogFooter className="sticky bottom-0 bg-background pt-4">
-              <Button type="submit" onClick={() => handleSaveFeature(editingFeature!)}>
-                Lưu
-              </Button>
-            </DialogFooter>
           </DialogContent>
         </Dialog>
       </div>

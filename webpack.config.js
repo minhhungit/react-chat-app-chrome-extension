@@ -7,10 +7,12 @@ import CopyWebpackPlugin from 'copy-webpack-plugin';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 export default {
+    mode: "development", // Đảm bảo đang chạy development mode
+    devtool: "source-map", // Tránh sử dụng eval() để fix lỗi CSP
+    //entry: './src/window/index.tsx',
     entry: {
-        window: "./src/window/index.tsx", // New entry point for the window
+        chatbox : "./src/chatbox/index.tsx", // New entry point for the chatbox
         background: "./src/background/background.ts",
-        options: './src/options/options.tsx',
         contentScript: './src/content/contentScript.ts',
     },
     output: {
@@ -47,14 +49,9 @@ export default {
     },
     plugins: [
         new HtmlWebpackPlugin({
-            template: "./src/window/window.html", // Template for the new window
-            filename: "window.html",
-            chunks: ["window"],
-        }),
-        new HtmlWebpackPlugin({
-            template: "./src/options/options.html", // Template for the new window
-            filename: "options.html",
-            chunks: ["options"],
+            template: "./src/chatbox/index.html", // Template for the new window
+            filename: "index.html",
+            chunks: ["chatbox"],
         }),
         new CopyWebpackPlugin({
             patterns: [
@@ -64,7 +61,11 @@ export default {
                 },
                 {
                     from: "public/icon.png",
-                    to: "icon.png",
+                    to: "assets/icon.png",
+                },
+                {
+                    from: "public/icon128.png",
+                    to: "assets/icon128.png",
                 }
             ],
         }),
@@ -82,5 +83,16 @@ export default {
                 }
             }
         }
-    }
+    },
+    devServer: {
+        static: {
+            directory: path.join(__dirname, 'dist'),
+        },
+        port: 'auto',
+        open: true,
+        hot:true, // Bật Hot Module Replacement để cập nhật trang nhanh hơn.
+        headers: {
+            "Content-Security-Policy": "script-src 'self' 'unsafe-inline' http://localhost:* http://127.0.0.1:*"
+        }
+    },
 };

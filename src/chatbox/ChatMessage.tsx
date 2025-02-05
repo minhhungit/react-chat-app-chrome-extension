@@ -14,7 +14,6 @@ import { useChat } from "../context/ChatContext";
 import { cn } from "@/lib/utils";
 
 interface ChatMessageProps {
-  menuItemId: string;
   id: string;
   message: string;
   reasoningMessage: string;
@@ -49,7 +48,7 @@ const renderMarkdown = (content: string) => (
   </ReactMarkdown>
 );
 
-const ChatMessage: React.FC<ChatMessageProps> = ({ menuItemId, id, message, reasoningMessage, pending, isError }) => {
+const ChatMessage: React.FC<ChatMessageProps> = ({ id, message, reasoningMessage, pending, isError }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [editContent, setEditContent] = useState(message);
 
@@ -93,7 +92,7 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ menuItemId, id, message, reas
               </CollapsibleTrigger>
             </div>
             <CollapsibleContent className="space-y-2">
-              <div className="p-3 rounded-lg max-h-48 overflow-y-auto text-gray-700">
+              <div className="p-2 rounded-lg max-h-48 overflow-y-auto text-gray-700">
                 {renderMarkdown(reasoningMessage)}
               </div>
             </CollapsibleContent>
@@ -102,7 +101,7 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ menuItemId, id, message, reas
         {message && (
           <div
             className={cn(
-              "prose p-3 rounded-lg mt-2 text-base",
+              "prose p-2 rounded-lg mt-2 text-base",
               isAiMessage ? "bg-muted" : "ml-auto",
               isError && "bg-destructive text-destructive-foreground"
             )}
@@ -117,7 +116,7 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ menuItemId, id, message, reas
 
   return (
     <div className={`flex ${isAiMessage ? 'justify-start' : 'justify-end'} mb-4`}>
-      <div className={`max-w-[80%] p-3 rounded-lg ${
+      <div className={`max-w-[80%] p-2 rounded-lg ${
         isAiMessage ? 'bg-blue-100' : 'bg-green-100'
       }`}>
         {renderContent(message)}
@@ -133,7 +132,7 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ menuItemId, id, message, reas
               variant="ghost"
               size="sm"
               onClick={async () => {
-                await regenerateResponse(menuItemId, id);
+                await regenerateResponse(id);
               }}
               disabled={isLoading}
             >

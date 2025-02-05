@@ -1,5 +1,5 @@
 import { Message } from "@/context/ChatContext";
-import { FeatureEntry } from "@/window/SettingsPage";
+import { FeatureEntry } from "@/settings/SettingsPage";
 import { makeAutoObservable } from "mobx";
 
 class ChatStore {
@@ -14,6 +14,7 @@ class ChatStore {
     icon: "",
     enableReasoning: false
   };
+  defaultFeatureId: string = "";
 
   constructor() {
     makeAutoObservable(this);
@@ -56,7 +57,9 @@ class ChatStore {
     cb && (this.messages = cb(this.messages));
   }
 
-  
+  setDefaultFeatureId(id: string) {
+    this.defaultFeatureId = id;
+  }
 }
 
 export const chatStore = new ChatStore(); 
