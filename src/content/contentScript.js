@@ -1,4 +1,4 @@
-import turndownService from "@/lib/turndownService";
+import turndownService from "@/utils/turndownService";
 
 let testInject = function() {
 
@@ -11,6 +11,27 @@ let testInject = function() {
 
 testInject.init();
 
+
+document.addEventListener('mouseup', function() {
+  let selection = window.getSelection();
+  if (selection != null && typeof selection !== 'undefined' && selection.rangeCount > 0) {
+      let range = selection.getRangeAt(0);
+      
+      // Lấy phần tử cha gần nhất là một phần tử HTML
+      let container = range.commonAncestorContainer;
+        
+      // Đảm bảo rằng container là một ELEMENT_NODE
+      while (container.nodeType !== Node.ELEMENT_NODE) {
+          container = container.parentNode;
+      }
+
+      // Sử dụng outerHTML để lấy toàn bộ mã HTML của phần tử cha
+      let selectedHTML = container?.outerHTML || "";
+
+      console.log("Selected Text:", selection.toString());
+      console.log("Selected HTML:", selectedHTML);
+  }
+});
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (message.action === 'getSelectedHTML') {

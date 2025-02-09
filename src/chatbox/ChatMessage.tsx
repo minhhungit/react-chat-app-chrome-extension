@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useState, memo, useEffect } from "react";
 import { Button } from "@/components/ui/button"
 import {
   Collapsible,
@@ -8,10 +8,16 @@ import {
 import { ChevronDown, ChevronUp } from "lucide-react"
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
-import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
+// import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
+const LazySyntaxHighlighter = React.lazy(() =>
+  import("react-syntax-highlighter").then((module) => ({
+    default: module.Prism,
+  }))
+);
+
 import { vscDarkPlus } from "react-syntax-highlighter/dist/cjs/styles/prism";
 import { useChat } from "../context/ChatContext";
-import { cn } from "@/lib/utils";
+import { cn } from "@/utils/utils";
 
 interface ChatMessageProps {
   id: string;
@@ -22,20 +28,49 @@ interface ChatMessageProps {
 }
 
 const renderMarkdown = (content: string) => (
+  <MemoizedReactMarkdown content={content} />
+
+  // <ReactMarkdown
+  //   remarkPlugins={[remarkGfm]}
+  //   components={{
+  //     code({ node, inline, className, children, ...props }) {
+  //       const match = /language-(\w+)/.exec(className || '');
+  //       return !inline && match ? (
+  //         <SyntaxHighlighter
+  //           style={vscDarkPlus as any}
+  //           language={match[1]}
+  //           PreTag="div"
+  //           {...props}
+  //         >
+  //           {String(children).replace(/\n$/, '')}
+  //         </SyntaxHighlighter>
+  //       ) : (
+  //         <code className={className} {...props}>
+  //           {children}
+  //         </code>
+  //       );
+  //     }
+  //   }}
+  // >
+  //   {content}
+  // </ReactMarkdown>
+);
+
+const MemoizedReactMarkdown = memo(({ content }: { content: string }) => (
   <ReactMarkdown
     remarkPlugins={[remarkGfm]}
     components={{
       code({ node, inline, className, children, ...props }) {
         const match = /language-(\w+)/.exec(className || '');
         return !inline && match ? (
-          <SyntaxHighlighter
+          <LazySyntaxHighlighter
             style={vscDarkPlus as any}
             language={match[1]}
             PreTag="div"
             {...props}
           >
             {String(children).replace(/\n$/, '')}
-          </SyntaxHighlighter>
+          </LazySyntaxHighlighter>
         ) : (
           <code className={className} {...props}>
             {children}
@@ -46,7 +81,7 @@ const renderMarkdown = (content: string) => (
   >
     {content}
   </ReactMarkdown>
-);
+));
 
 const ChatMessage: React.FC<ChatMessageProps> = ({ id, message, reasoningMessage, pending, isError }) => {
   const [isEditing, setIsEditing] = useState(false);
@@ -54,6 +89,8 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ id, message, reasoningMessage
 
   const { editMessage, isLoading, regenerateResponse } = useChat();
   const [isOpen, setIsOpen] = useState(true);
+
+  const [debouncedMessage, setDebouncedMessage] = useState('');
 
   // Thêm logic kiểm tra ID
   // const isUserMessage = id.endsWith('-user');
@@ -68,6 +105,14 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ id, message, reasoningMessage
   //   setEditContent(message);
   //   setIsEditing(false);
   // };
+
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedMessage(message);
+    }, 200); // Adjust debounce time
+  
+    return () => clearTimeout(handler);
+  }, [message]);
 
   const renderContent = (content: string) => {
     // const thinkingMatch = content.match(/<thinking>(.*?)<\/thinking>/);
@@ -94,11 +139,12 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ id, message, reasoningMessage
             <CollapsibleContent className="space-y-2">
               <div className="p-2 rounded-lg max-h-48 overflow-y-auto text-gray-700">
                 {renderMarkdown(reasoningMessage)}
+                {/* {reasoningMessage} */}
               </div>
             </CollapsibleContent>
           </Collapsible>
         )}
-        {message && (
+        {debouncedMessage && message && (
           <div
             className={cn(
               "prose p-2 rounded-lg mt-2 text-base",
@@ -108,6 +154,7 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ id, message, reasoningMessage
             style={{ maxWidth: '100%' }}
           >
             {renderMarkdown(message)}
+            {/* {message} */}
           </div>
         )}
       </div>

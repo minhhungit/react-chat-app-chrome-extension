@@ -1,3 +1,6 @@
+import { clsx, type ClassValue } from "clsx"
+import { twMerge } from "tailwind-merge"
+
 /**
  * Tạo chuỗi ngẫu nhiên độ dài chỉ định chỉ chứa các ký tự [a-z]
  * @param length Độ dài chuỗi mong muốn
@@ -14,3 +17,7 @@ export const generateRandomString = (length: number): string => {
   
   return result;
 };
+
+export function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs))
+}

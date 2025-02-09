@@ -113,10 +113,12 @@ const ChatProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
 
       if (chatStore.currentFeature?.enableReasoning) {
         const reasoningResult = await createReasoning(pendingMessage.id, recentHistory);
-        recentHistory.push({
-          role: 'assistant',
-          content: `Trước khi trả lời yêu cầu của bạn, tôi đã suy nghĩ và suy luận như sau:\n<think>${reasoningResult}</think>\n---Dựa vào suy luận trên, sau đây là câu trả lời của tôi:`
-        });
+        if(reasoningResult.trim().length > 0){
+          recentHistory.push({
+            role: 'assistant',
+            content: `Trước khi trả lời yêu cầu của bạn, tôi đã suy nghĩ và suy luận như sau:\n<think>${reasoningResult}</think>\n---Dựa vào suy luận trên, sau đây là câu trả lời của tôi:`
+          });
+        }        
       }
 
       await ApiHelper.chatComplete(recentHistory, (content) => {

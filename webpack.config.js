@@ -13,7 +13,7 @@ export default {
     entry: {
         chatbox : "./src/chatbox/index.tsx", // New entry point for the chatbox
         background: "./src/background/background.ts",
-        contentScript: './src/content/contentScript.ts',
+        contentScript: './src/content/contentScript.js',
     },
     output: {
         path: path.resolve(__dirname, "dist"),
@@ -66,6 +66,10 @@ export default {
                 {
                     from: "public/icon128.png",
                     to: "assets/icon128.png",
+                },
+                {
+                    from: "src/content/contentScript.js",
+                    to: "contentScript.js",
                 }
             ],
         }),

@@ -59,11 +59,11 @@ const DEFAULT_PROVIDERS: Record<string, ProviderConfig> = {
       apiUrl: "https://api.openai.com/v1",
       apiKey: "",
       model: "gpt-4",
-      temperature: 0.7,
+      temperature: 0.9,
       max_tokens: 1000,
-      top_p: 1,
-      frequency_penalty: 0,
-      presence_penalty: 0,
+      top_p: 0.7,
+      frequency_penalty: 0.7,
+      presence_penalty: 0.7,
       modelList: ["gpt-3.5-turbo", "gpt-4", "gpt-4-turbo", "gpt-4-32k"]
     },
     reasoningConfig: {
@@ -71,11 +71,11 @@ const DEFAULT_PROVIDERS: Record<string, ProviderConfig> = {
       apiUrl: "https://api.openai.com/v1",
       apiKey: "",
       model: "gpt-4",
-      temperature: 0.7,
+      temperature: 0.9,
       max_tokens: 500,
-      top_p: 1,
-      frequency_penalty: 0,
-      presence_penalty: 0,
+      top_p: 0.7,
+      frequency_penalty: 0.7,
+      presence_penalty: 0.7,
       modelList: ["openai-sample-reasoning-1", "openai-sample-reasoning-2"]
     }
   },
@@ -85,11 +85,11 @@ const DEFAULT_PROVIDERS: Record<string, ProviderConfig> = {
       apiUrl: "https://api.anthropic.com/v1",
       apiKey: "",
       model: "",
-      temperature: 0.7,
+      temperature: 0.9,
       max_tokens: 1000,
-      top_p: 1,
-      frequency_penalty: 0,
-      presence_penalty: 0,
+      top_p: 0.7,
+      frequency_penalty: 0.7,
+      presence_penalty: 0.7,
       modelList: ["claude-2", "claude-instant-1", "claude-2.1", "claude-3-opus"]
     },
     reasoningConfig: {
@@ -97,11 +97,11 @@ const DEFAULT_PROVIDERS: Record<string, ProviderConfig> = {
       apiUrl: "https://api.anthropic.com/v1",
       apiKey: "",
       model: "",
-      temperature: 0.7,
+      temperature: 0.9,
       max_tokens: 500,
-      top_p: 1,
-      frequency_penalty: 0,
-      presence_penalty: 0,
+      top_p: 0.7,
+      frequency_penalty: 0.7,
+      presence_penalty: 0.7,
       modelList: ["anthropic-sample-resoning-1", "anthropic-sample-resoning-1"]
     }
   },
@@ -111,11 +111,11 @@ const DEFAULT_PROVIDERS: Record<string, ProviderConfig> = {
       apiUrl: "https://api.groq.com/openai/v1",
       apiKey: "",
       model: "",
-      temperature: 0.7,
+      temperature: 0.9,
       max_tokens: 1000,
-      top_p: 1,
-      frequency_penalty: 0,
-      presence_penalty: 0,
+      top_p: 0.7,
+      frequency_penalty: 0.7,
+      presence_penalty: 0.7,
       modelList: ["llama-3.3-70b-versatile"]
     },
     reasoningConfig: {
@@ -123,11 +123,11 @@ const DEFAULT_PROVIDERS: Record<string, ProviderConfig> = {
       apiUrl: "https://api.groq.com/openai/v1",
       apiKey: "",
       model: "",
-      temperature: 0.7,
+      temperature: 0.9,
       max_tokens: 500,
-      top_p: 1,
-      frequency_penalty: 0,
-      presence_penalty: 0,
+      top_p: 0.7,
+      frequency_penalty: 0.7,
+      presence_penalty: 0.7,
       modelList: ["groq-sample-reasoning-1", "groq-sample-reasoning-2"]
     }
   },
@@ -137,11 +137,11 @@ const DEFAULT_PROVIDERS: Record<string, ProviderConfig> = {
       apiUrl: "https://api.deepseek.com/v1",
       apiKey: "",
       model: "",
-      temperature: 0.7,
+      temperature: 0.9,
       max_tokens: 1000,
-      top_p: 1,
-      frequency_penalty: 0,
-      presence_penalty: 0,
+      top_p: 0.7,
+      frequency_penalty: 0.7,
+      presence_penalty: 0.7,
       modelList: ["deepseek-chat"]
     },
     reasoningConfig: {
@@ -149,11 +149,11 @@ const DEFAULT_PROVIDERS: Record<string, ProviderConfig> = {
       apiUrl: "https://api.deepseek.com/v1",
       apiKey: "",
       model: "",
-      temperature: 0.7,
+      temperature: 0.9,
       max_tokens: 500,
-      top_p: 1,
-      frequency_penalty: 0,
-      presence_penalty: 0,
+      top_p: 0.7,
+      frequency_penalty: 0.7,
+      presence_penalty: 0.7,
       modelList: ["deepseek-reasoning"]
     }
   },
@@ -163,11 +163,11 @@ const DEFAULT_PROVIDERS: Record<string, ProviderConfig> = {
       apiUrl: "https://openrouter.ai/api/v1",
       apiKey: "",
       model: "",
-      temperature: 0.7,
+      temperature: 0.9,
       max_tokens: 1000,
-      top_p: 1,
-      frequency_penalty: 0,
-      presence_penalty: 0,
+      top_p: 0.7,
+      frequency_penalty: 0.7,
+      presence_penalty: 0.7,
       modelList: ["meta-llama/llama-3.1-405b-instruct"]
     },
     reasoningConfig: {
@@ -175,11 +175,11 @@ const DEFAULT_PROVIDERS: Record<string, ProviderConfig> = {
       apiUrl: "https://openrouter.ai/api/v1",
       apiKey: "",
       model: "",
-      temperature: 0.7,
+      temperature: 0.9,
       max_tokens: 500,
-      top_p: 1,
-      frequency_penalty: 0,
-      presence_penalty: 0,
+      top_p: 0.7,
+      frequency_penalty: 0.7,
+      presence_penalty: 0.7,
       modelList: ["perplexity/sonar-reasoning"]
     }
   },
@@ -189,11 +189,11 @@ const DEFAULT_PROVIDERS: Record<string, ProviderConfig> = {
       apiUrl: "",
       apiKey: "",
       model: "",
-      temperature: 0.7,
+      temperature: 0.9,
       max_tokens: 1000,
-      top_p: 1,
-      frequency_penalty: 0,
-      presence_penalty: 0,
+      top_p: 0.7,
+      frequency_penalty: 0.7,
+      presence_penalty: 0.7,
       modelList: []
     },
     reasoningConfig: {
@@ -201,11 +201,11 @@ const DEFAULT_PROVIDERS: Record<string, ProviderConfig> = {
       apiUrl: "",
       apiKey: "",
       model: "",
-      temperature: 0.7,
+      temperature: 0.9,
       max_tokens: 500,
-      top_p: 1,
-      frequency_penalty: 0,
-      presence_penalty: 0,
+      top_p: 0.7,
+      frequency_penalty: 0.7,
+      presence_penalty: 0.7,
       modelList: []
     }
   }
@@ -837,21 +837,22 @@ Bạn là trợ lý dịch thuật đa ngữ, chuyên xử lý văn bản học 
                             <p>{SETTING_EXPLANATIONS.temperature}</p>
                           </PopoverContent>
                         </Popover>
-                        <div className="flex items-center gap-4">
-                          <Slider
+                        <Slider
                             value={[chatConfig.temperature]}
                             onValueChange={value => handleConfigChange('chatConfig.temperature', value[0])}
-                            min={0}
-                            max={2}
+                            min={0.2}
+                            max={1.5}
                             step={0.1}
                           />
                           <Input
                             type="number"
+                            min={0.2}
+                            max={1.5}
+                            step={0.1}
                             value={chatConfig.temperature}
                             onChange={e => handleConfigChange('chatConfig.temperature', Number(e.target.value))}
                             className="w-20"
                           />
-                        </div>
                       </div>
                       <div className="space-y-2">
                         <Label>Max Tokens</Label>
@@ -887,11 +888,14 @@ Bạn là trợ lý dịch thuật đa ngữ, chuyên xử lý văn bản học 
                           value={[chatConfig.top_p]}
                           onValueChange={value => handleConfigChange('chatConfig.top_p', value[0])}
                           min={0}
-                          max={1}
+                          max={0.9}
                           step={0.1}
                         />
                         <Input
                           type="number"
+                          min={0}
+                          max={0.9}
+                          step={0.1}
                           value={chatConfig.top_p}
                           onChange={e => handleConfigChange('chatConfig.top_p', Number(e.target.value))}
                           className="w-20"
@@ -912,12 +916,15 @@ Bạn là trợ lý dịch thuật đa ngữ, chuyên xử lý văn bản học 
                         <Slider
                           value={[chatConfig.frequency_penalty]}
                           onValueChange={value => handleConfigChange('chatConfig.frequency_penalty', value[0])}
-                          min={-2}
-                          max={2}
+                          min={0}
+                          max={1}
                           step={0.1}
                         />
                         <Input
                           type="number"
+                          min={0}
+                          max={1}
+                          step={0.1}
                           value={chatConfig.frequency_penalty}
                           onChange={e => handleConfigChange('chatConfig.frequency_penalty', Number(e.target.value))}
                           className="w-20"
@@ -938,12 +945,15 @@ Bạn là trợ lý dịch thuật đa ngữ, chuyên xử lý văn bản học 
                         <Slider
                           value={[chatConfig.presence_penalty]}
                           onValueChange={value => handleConfigChange('chatConfig.presence_penalty', value[0])}
-                          min={-2}
-                          max={2}
+                          min={0}
+                          max={1}
                           step={0.1}
                         />
                         <Input
                           type="number"
+                          min={0}
+                          max={1}
+                          step={0.1}
                           value={chatConfig.presence_penalty}
                           onChange={e => handleConfigChange('chatConfig.presence_penalty', Number(e.target.value))}
                           className="w-20"
@@ -1058,21 +1068,22 @@ Bạn là trợ lý dịch thuật đa ngữ, chuyên xử lý văn bản học 
                     <div className="grid grid-cols-2 gap-4">
                       <div className="space-y-2">
                         <Label>Reasoning Temperature</Label>
-                        <div className="flex items-center gap-4">
-                          <Slider
+                        <Slider
                             value={[reasoningConfig.temperature]}
                             onValueChange={value => handleConfigChange('reasoningConfig.temperature', value[0])}
-                            min={0}
-                            max={2}
+                            min={0.2}
+                            max={1.5}
                             step={0.1}
                           />
                           <Input
                             type="number"
+                            min={0.2}
+                            max={1.5}
+                            step={0.1}
                             value={reasoningConfig.temperature}
                             onChange={e => handleConfigChange('reasoningConfig.temperature', Number(e.target.value))}
                             className="w-20"
                           />
-                        </div>
                       </div>
                       <div className="space-y-2">
                         <Label>Reasoning Max Tokens</Label>
@@ -1080,6 +1091,93 @@ Bạn là trợ lý dịch thuật đa ngữ, chuyên xử lý văn bản học 
                           type="number"
                           value={reasoningConfig.max_tokens}
                           onChange={e => handleConfigChange('reasoningConfig.max_tokens', Number(e.target.value))}
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Reasoning Top P</Label>
+                        <Popover>
+                          <PopoverTrigger asChild>
+                            <Button variant="ghost" size="sm" className="p-1">
+                              <InfoIcon className="h-4 w-4" />
+                            </Button>
+                          </PopoverTrigger>
+                          <PopoverContent className="w-80">
+                            <p>{SETTING_EXPLANATIONS.top_p}</p>
+                          </PopoverContent>
+                        </Popover>
+                        <Slider
+                          value={[reasoningConfig.top_p]}
+                          onValueChange={value => handleConfigChange('reasoningConfig.top_p', value[0])}
+                          min={0}
+                          max={0.9}
+                          step={0.1}
+                        />
+                        <Input
+                          type="number"
+                          min={0}
+                          max={0.9}
+                          step={0.1}
+                          value={reasoningConfig.top_p}
+                          onChange={e => handleConfigChange('reasoningConfig.top_p', Number(e.target.value))}
+                          className="w-20"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Reasoning Frequency Penalty</Label>
+                        <Popover>
+                          <PopoverTrigger asChild>
+                            <Button variant="ghost" size="sm" className="p-1">
+                              <InfoIcon className="h-4 w-4" />
+                            </Button>
+                          </PopoverTrigger>
+                          <PopoverContent className="w-80">
+                            <p>{SETTING_EXPLANATIONS.frequency_penalty}</p>
+                          </PopoverContent>
+                        </Popover>
+                        <Slider
+                          value={[reasoningConfig.frequency_penalty]}
+                          onValueChange={value => handleConfigChange('reasoningConfig.frequency_penalty', value[0])}
+                          min={0}
+                          max={1}
+                          step={0.1}
+                        />
+                        <Input
+                          type="number"
+                          min={0}
+                          max={1}
+                          step={0.1}
+                          value={reasoningConfig.frequency_penalty}
+                          onChange={e => handleConfigChange('reasoningConfig.frequency_penalty', Number(e.target.value))}
+                          className="w-20"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Reasoning Presence Penalty</Label>
+                        <Popover>
+                          <PopoverTrigger asChild>
+                            <Button variant="ghost" size="sm" className="p-1">
+                              <InfoIcon className="h-4 w-4" />
+                            </Button>
+                          </PopoverTrigger>
+                          <PopoverContent className="w-80">
+                            <p>{SETTING_EXPLANATIONS.presence_penalty}</p>
+                          </PopoverContent>
+                        </Popover>
+                        <Slider
+                          value={[reasoningConfig.presence_penalty]}
+                          onValueChange={value => handleConfigChange('reasoningConfig.presence_penalty', value[0])}
+                          min={0}
+                          max={1}
+                          step={0.1}
+                        />
+                        <Input
+                          type="number"
+                          min={0}
+                          max={1}
+                          step={0.1}
+                          value={reasoningConfig.presence_penalty}
+                          onChange={e => handleConfigChange('reasoningConfig.presence_penalty', Number(e.target.value))}
+                          className="w-20"
                         />
                       </div>
                     </div>

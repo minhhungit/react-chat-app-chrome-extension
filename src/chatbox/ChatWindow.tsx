@@ -89,13 +89,13 @@ const ChatWindow: React.FC = observer(() => {
     loadFeatures();
   }, []);
 
-  useEffect(() => {
-    if (autoScroll) {
-      setTimeout(() => {  
-        messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-      }, 500);
-    }
-  }, [chatStore.messages, autoScroll]);
+  // useEffect(() => {
+  //   if (autoScroll) {
+  //     setTimeout(() => {  
+  //       messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  //     }, 500);
+  //   }
+  // }, [chatStore.messages, autoScroll]);
 
   useEffect(() => {
     const updateDefaultFeature= async ()=>{
